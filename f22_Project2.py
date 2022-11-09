@@ -25,8 +25,37 @@ def get_listings_from_search_results(html_file):
         ('Loft in Mission District', 210, '1944564'),  # example
     ]
     """
-    pass
+    
+    with open(html_file, 'r') as f:
 
+        data = f.read()
+        soup = BeautifulSoup(data, 'html.parser')
+
+        title_list = []
+        rent_list = []
+        id_list = []
+        regex_id = 'title_([0-9]+)'
+        
+        tup_list = []
+        id_tags = soup.find_all("div", class_ = "t1jojoys dir dir-ltr") #creating a list of tags that match id criteras
+        rent_tags = soup.find_all("span", class_ = "t5u4927 dir dir-ltr") #creating a list of tags that match rent criteria
+        #print(data)
+        for tag in id_tags:
+            tag_text = tag.get("id")
+            #title_list.append(items.text) 
+            id_num = re.findall(regex_id, tag_text)
+            id_list.extend(id_num)
+
+            title_list.append(tag.text)
+
+        for tag in rent_tags:
+            #tag_text = tag.get("aria-label")
+            rent_list.append(int(tag.text[1:]))
+        
+        for i in range(len(title_list)):
+            tup_list.append((title_list[i], rent_list[i], id_list[i]))        
+    return tup_list 
+            
 
 def get_listing_information(listing_id):
     """
@@ -52,6 +81,7 @@ def get_listing_information(listing_id):
         number of bedrooms
     )
     """
+
     pass
 
 
@@ -147,11 +177,11 @@ class TestCases(unittest.TestCase):
         # check that the variable you saved after calling the function is a list
         self.assertEqual(type(listings), list)
         # check that each item in the list is a tuple
-
+        self.assertEqual(type(listings[0]), tuple)
         # check that the first title, cost, and listing id tuple is correct (open the search results html and find it)
-
+        self.assertEqual(listings[0], ('Loft in Mission District',210,'1944564'))
         # check that the last title is correct (open the search results html and find it)
-        pass
+        self.assertEqual(listings[-1], ('Guest suite in Mission District', 238, '32871760'))
 
     def test_get_listing_information(self):
         html_list = ["1623609",
@@ -243,3 +273,5 @@ if __name__ == '__main__':
     write_csv(database, "airbnb_dataset.csv")
     check_policy_numbers(database)
     unittest.main(verbosity=2)
+    print(get_listings_from_search_results('html_files/mission_district_search_results.html'))
+
