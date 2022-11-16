@@ -259,6 +259,7 @@ def extra_credit(listing_id):
             #else return true (never over limit)
 
 
+
 class TestCases(unittest.TestCase):
 
     def test_get_listings_from_search_results(self):
@@ -377,3 +378,19 @@ if __name__ == '__main__':
     print(get_listings_from_search_results('html_files/mission_district_search_results.html'))
     print(get_detailed_listing_database("html_files/mission_district_search_results.html"))
 
+'''
+Response 
+
+We know we want to keep airbnb accountable by checking if an airbnb does not have a policy number (a reference to the business license 
+San Francisco requires to operate a short-term rental). Every entry in our database has a policy number, is pending a policy number, or 
+is exempt from having one (hotels are exempt from this law). This is because airbnb requires listers to enter this information in a text 
+box before allowing their listing to go live. However, looking through our database, there is a policy number that doesn’t look like the 
+other policy numbers. The listing id “16204265” has an unusual policy number. Using images of the exterior of the house posted on airbnb, 
+we can pinpoint which apartment building this rental unit is located in, and check the San Francisco Planning Office to find out if this 
+airbnb does not have a policy number and entered random numbers, or if the lister had a typo. Through this process we found that this lister
+ does NOT have a short-term rental business license! This is an illegal rental unit that is taking a housing unit away from the local 
+population. We can now file a complaint with the planning office to start an investigation!
+
+Note that the “Property Information Map” of the San Francisco Planning Office may not work on eduroam or MWireless.
+
+'''
