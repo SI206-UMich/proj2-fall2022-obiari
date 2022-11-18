@@ -110,7 +110,7 @@ def get_listing_information(listing_id):
         if room_number == 'Studio':
             room_number = 1
         room_number = int(room_number)
-        print(room_number)
+        #print(room_number)
         tuple = (policy, place, room_number)
         #print(tuple)
     return tuple    
@@ -139,7 +139,7 @@ def get_detailed_listing_database(html_file):
             #func1 = item
             func2 = get_listing_information(item[2])
             #for tup in item:
-            print(item,func2)
+            #print(item,func2)
             new_tup = (item[0],item[1],item[2],func2[0],func2[1],func2[2])
             #print(new_tup)
             results.append(new_tup)
@@ -172,7 +172,7 @@ def write_csv(data, filename):
     """
 
     with open(filename, mode = "w") as f:
-        print(len(data)) #len 20 not 21 but in test case its 41? 
+        #print(len(data)) #len 20 not 21 but in test case its 41? 
         data_sorted = sorted(data, key= lambda x: x[1]) 
         writer = csv.writer(f)
         header =  ["Listing Title", "Cost", "Listing ID", "Policy Number", "Place Type", "Number of Bedrooms"]
@@ -231,11 +231,6 @@ def check_policy_numbers(data):
     return bad_policy_id
     '''
 
-
-
-
-
-
 def extra_credit(listing_id):
     """
     There are few exceptions to the requirement of listers obtaining licenses
@@ -250,13 +245,22 @@ def extra_credit(listing_id):
     gone over their 90 day limit, else return True, indicating the lister has
     never gone over their limit.
     """
-    #takes listing id
-    #scrapes review page 
-        #find month and year of each review 
-        #find review and put in list 
-        #loop thru
-            #if greater than 90 return False (over 90 day limit)
-            #else return true (never over limit)
+    with open("html_files/listing_" + listing_id + "_reviews.html", 'r') as f:
+
+        data = f.read()
+        soup = BeautifulSoup(data, 'html.parser')
+
+        counter_dic = {}
+        month_year = soup.find_all("li", class_ = "_1f1oir5")
+        for date in month_year:
+            #print(date.text)
+            year = date.text[-4:]
+            counter_dic[year] = counter_dic.get(year,0) + 1
+        #print(counter_dic)
+        for item in counter_dic: 
+            if counter_dic[item] > 90: 
+                return False
+        return True
 
 
 
@@ -375,22 +379,6 @@ if __name__ == '__main__':
     unittest.main(verbosity=2)
     #print(database)
     #print(detailed_database)
-    print(get_listings_from_search_results('html_files/mission_district_search_results.html'))
-    print(get_detailed_listing_database("html_files/mission_district_search_results.html"))
-
-'''
-Response 
-
-We know we want to keep airbnb accountable by checking if an airbnb does not have a policy number (a reference to the business license 
-San Francisco requires to operate a short-term rental). Every entry in our database has a policy number, is pending a policy number, or 
-is exempt from having one (hotels are exempt from this law). This is because airbnb requires listers to enter this information in a text 
-box before allowing their listing to go live. However, looking through our database, there is a policy number that doesn’t look like the 
-other policy numbers. The listing id “16204265” has an unusual policy number. Using images of the exterior of the house posted on airbnb, 
-we can pinpoint which apartment building this rental unit is located in, and check the San Francisco Planning Office to find out if this 
-airbnb does not have a policy number and entered random numbers, or if the lister had a typo. Through this process we found that this lister
- does NOT have a short-term rental business license! This is an illegal rental unit that is taking a housing unit away from the local 
-population. We can now file a complaint with the planning office to start an investigation!
-
-Note that the “Property Information Map” of the San Francisco Planning Office may not work on eduroam or MWireless.
-
-'''
+    #print(get_listings_from_search_results('html_files/mission_district_search_results.html'))
+    #print(get_detailed_listing_database("html_files/mission_district_search_results.html"))
+    extra_credit('16204265')
